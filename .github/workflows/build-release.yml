@@ -1,19 +1,17 @@
-# Builds the Angular Elements bundle (js + css) for every environment and
-# publishes it as:
-#   1. Workflow artifacts (temporary, 30 days)       -> always
-#   2. A GitHub Release with the files attached      -> push to main / tag v*
-#   3. GitHub Pages (served with proper MIME + CORS)  -> opt-in, repo variable PAGES_ENABLED=true
-name: Build & Release
+# One deployable version per environment branch:
+#   push to dev | stg | prd
+#     -> build with that Angular configuration (npm run build:<env>)
+#     -> GitHub Release "<env>-<run>" with the js/css (versioned storage)
+#     -> GitHub Pages: the whole site is rebuilt from the LATEST release of every
+#        environment, because a Pages deployment always replaces the full site.
+# Pages is opt-in: repo variable PAGES_ENABLED=true, and dev/stg/prd allowed in
+# Settings > Environments > github-pages > Deployment branches.
+name: Build & Deploy
 
 on:
   push:
-    branches: [main]
-    tags: ['v*']
+    branches: [dev, stg, prd]
   workflow_dispatch:
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: false
 
 env:
   ELEMENT_NAME: poc-github-contigo
@@ -21,14 +19,11 @@ env:
 
 jobs:
   build:
-    name: Build (${{ matrix.env }})
+    name: Build (${{ github.ref_name }})
+    if: contains(fromJSON('["dev","stg","prd"]'), github.ref_name)
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    strategy:
-      fail-fast: true
-      matrix:
-        env: [dev, stg, prd]
     steps:
       - uses: actions/checkout@v7
 
@@ -40,81 +35,44 @@ jobs:
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
 
-      - name: Build ${{ matrix.env }}
-        run: npm run build:${{ matrix.env }}
-
-      - name: Stage output
-        run: |
-          mkdir -p "out/${{ matrix.env }}"
-          cp "elements/${ELEMENT_NAME}.js"  "out/${{ matrix.env }}/"
-          cp "elements/${ELEMENT_NAME}.css" "out/${{ matrix.env }}/"
-          ls -la "out/${{ matrix.env }}"
+      - name: Build ${{ github.ref_name }}
+        run: npm run build:${{ github.ref_name }}
 
       - uses: actions/upload-artifact@v7
         with:
-          name: elements-${{ matrix.env }}
-          path: out/
+          name: elements-${{ github.ref_name }}
+          path: elements/
           retention-days: 30
           if-no-files-found: error
 
   release:
-    name: GitHub Release
+    name: Release (${{ github.ref_name }})
     needs: build
-    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - uses: actions/download-artifact@v8
         with:
-          pattern: elements-*
-          path: bundle
-          merge-multiple: true
+          name: elements-${{ github.ref_name }}
+          path: release
 
-      - name: Resolve tag
-        id: tag
-        run: |
-          if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
-            echo "name=$GITHUB_REF_NAME" >> "$GITHUB_OUTPUT"
-          else
-            echo "name=build-$GITHUB_RUN_NUMBER" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Prepare release assets
-        env:
-          TAG: ${{ steps.tag.outputs.name }}
-        run: |
-          mkdir release
-          # Flat files with the environment as suffix: poc-github-contigo.prd.js
-          for env_dir in bundle/*/; do
-            env_name=$(basename "$env_dir")
-            for f in "$env_dir"*; do
-              file=$(basename "$f")
-              cp "$f" "release/${file%.*}.${env_name}.${file##*.}"
-            done
-          done
-          # Same content keeping the per-environment folder layout (for deploy scripts)
-          (cd bundle && zip -qr "../release/${ELEMENT_NAME}-${TAG}.zip" .)
-          (cd release && sha256sum * > SHA256SUMS.txt)
-          ls -la release
-
-      - name: Create or update release
+      - name: Create release
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-          TAG: ${{ steps.tag.outputs.name }}
+          ENV_NAME: ${{ github.ref_name }}
         run: |
+          TAG="${ENV_NAME}-${GITHUB_RUN_NUMBER}"
+          (cd release && sha256sum * > SHA256SUMS.txt)
+
           cat > notes.md <<EOF
-          Build \`${GITHUB_SHA::7}\` from \`${GITHUB_REF_NAME}\` — run [#${GITHUB_RUN_NUMBER}](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}).
-
-          | Environment | JS | CSS |
-          |---|---|---|
-          | dev | \`${ELEMENT_NAME}.dev.js\` | \`${ELEMENT_NAME}.dev.css\` |
-          | stg | \`${ELEMENT_NAME}.stg.js\` | \`${ELEMENT_NAME}.stg.css\` |
-          | prd | \`${ELEMENT_NAME}.prd.js\` | \`${ELEMENT_NAME}.prd.css\` |
-
-          \`${ELEMENT_NAME}-${TAG}.zip\` contains the same files in \`<env>/${ELEMENT_NAME}.{js,css}\` layout.
+          Environment **${ENV_NAME}** — commit \`${GITHUB_SHA::7}\`, run [#${GITHUB_RUN_NUMBER}](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}).
           EOF
+
+          # Only prd is marked as "latest"; dev/stg are prereleases.
+          FLAGS=(--prerelease)
+          [[ "$ENV_NAME" == "prd" ]] && FLAGS=(--latest)
 
           if gh release view "$TAG" > /dev/null 2>&1; then
             gh release upload "$TAG" release/* --clobber
@@ -123,37 +81,55 @@ jobs:
               --target "$GITHUB_SHA" \
               --title "$TAG" \
               --notes-file notes.md \
-              --latest
+              "${FLAGS[@]}"
           fi
 
   pages:
-    name: GitHub Pages
-    needs: build
-    # Pages on a private repo requires a paid plan (Pro/Team/Enterprise).
-    # Enable with: Settings > Pages > Source = GitHub Actions, and repo variable PAGES_ENABLED=true
-    if: vars.PAGES_ENABLED == 'true' && github.ref == 'refs/heads/main'
+    name: Deploy GitHub Pages
+    needs: release
+    if: vars.PAGES_ENABLED == 'true'
     runs-on: ubuntu-latest
+    # Serialize deployments; each one republishes every environment, so the last
+    # one to run always contains the latest release of dev, stg and prd.
+    concurrency:
+      group: github-pages
+      cancel-in-progress: false
     permissions:
+      contents: read
       pages: write
       id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
-      - uses: actions/download-artifact@v8
-        with:
-          pattern: elements-*
-          path: site
-          merge-multiple: true
-
-      - name: Build index
+      - name: Assemble site from the latest release of each environment
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
         run: |
-          {
-            echo "<!doctype html><meta charset=utf-8><title>${ELEMENT_NAME}</title>"
-            echo "<h1>${ELEMENT_NAME}</h1><p>Build ${GITHUB_SHA::7} (run #${GITHUB_RUN_NUMBER})</p><ul>"
-            (cd site && find . -type f \( -name '*.js' -o -name '*.css' \) | sort | sed -E 's#^\./(.*)#<li><a href="\1">\1</a></li>#')
-            echo "</ul>"
-          } > site/index.html
+          mkdir site
+          rows=""
+          for env in dev stg prd; do
+            tag=$(gh release list --limit 200 --json tagName,createdAt \
+              --jq "map(select(.tagName | startswith(\"${env}-\"))) | sort_by(.createdAt) | last | .tagName // empty")
+            if [[ -z "$tag" ]]; then
+              echo "::notice::No release yet for ${env}"
+              continue
+            fi
+            gh release download "$tag" --dir "site/${env}" \
+              --pattern "${ELEMENT_NAME}.js" --pattern "${ELEMENT_NAME}.css"
+            sha=$(gh release view "$tag" --json targetCommitish --jq .targetCommitish)
+            printf '{"env":"%s","tag":"%s","commit":"%s"}\n' "$env" "$tag" "$sha" > "site/${env}/version.json"
+            rows+="<tr><td>${env}</td><td>${tag}</td><td><a href=\"${env}/${ELEMENT_NAME}.js\">js</a> · <a href=\"${env}/${ELEMENT_NAME}.css\">css</a> · <a href=\"${env}/version.json\">version</a></td></tr>"
+          done
+
+          cat > site/index.html <<EOF
+          <!doctype html>
+          <html lang="es"><meta charset="utf-8"><title>${ELEMENT_NAME}</title>
+          <h1>${ELEMENT_NAME}</h1>
+          <table><tr><th>Ambiente</th><th>Release</th><th>Archivos</th></tr>${rows}</table>
+          </html>
+          EOF
           find site -type f
 
       - uses: actions/configure-pages@v6

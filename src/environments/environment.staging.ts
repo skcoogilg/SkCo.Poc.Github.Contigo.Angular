@@ -11,6 +11,7 @@ const eventHubsStg = {
 
 export const environment = {
   production: false,
+  envName: 'stg',
   bootstrap: [],
   baseEnvApimUrl: 'https://apisstg.skandia.com.co',
   environmentOauth: 'stg',

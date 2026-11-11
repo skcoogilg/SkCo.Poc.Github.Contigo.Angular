@@ -6,21 +6,19 @@ Base: copia de `devengers-front-template` (Angular 18, builder `browser`, `build
 
 ## Pipeline (`.github/workflows/build-release.yml`)
 
-| Disparador | Qué hace |
-|---|---|
-| push a `main` | build `dev`/`stg`/`prd` → artifacts → **Release `build-<n>`** |
-| push de tag `v*` | igual, Release con el nombre del tag |
-| manual (`workflow_dispatch`) | build + artifacts (release solo si se lanza sobre `main` o un tag) |
+Una versión desplegada por ambiente, cada una en su rama:
 
-Cada release adjunta:
+| Push a | Build | Release | Servido en |
+|---|---|---|---|
+| `dev` | `npm run build:dev` | `dev-<n>` (prerelease) | `…/dev/poc-github-contigo.{js,css}` |
+| `stg` | `npm run build:stg` | `stg-<n>` (prerelease) | `…/stg/poc-github-contigo.{js,css}` |
+| `prd` | `npm run build:prd` | `prd-<n>` (latest) | `…/prd/poc-github-contigo.{js,css}` |
 
-```
-poc-github-contigo.dev.js   poc-github-contigo.dev.css
-poc-github-contigo.stg.js   poc-github-contigo.stg.css
-poc-github-contigo.prd.js   poc-github-contigo.prd.css
-poc-github-contigo-<tag>.zip   (mismos archivos en <env>/poc-github-contigo.{js,css})
-SHA256SUMS.txt
-```
+`…` = `https://skcoogilg.github.io/SkCo.Poc.Github.Contigo.Angular`. Cada carpeta trae `version.json` con el release y el commit desplegados.
+
+Flujo: `build` → `release` (guarda `poc-github-contigo.js`, `.css` y `SHA256SUMS.txt`) → `pages`. Como un despliegue de Pages reemplaza el sitio completo, el job `pages` lo rearma con el **último release de cada ambiente**; así un deploy de `dev` no borra lo de `stg` ni `prd`. Los despliegues se serializan (`concurrency: github-pages`). `main` no dispara el pipeline.
+
+Promover: merge `dev` → `stg` → `prd`.
 
 ## Dónde quedan los archivos y para qué sirve cada opción
 
@@ -30,14 +28,21 @@ SHA256SUMS.txt
 | **Releases** | Permanente, versionado | **No.** Se sirven como `application/octet-stream` + `Content-Disposition: attachment`, sin CORS; en repo privado además piden autenticación. Sirven como *almacén de versiones* (fuente para un despliegue), no como CDN. |
 | **GitHub Pages** (job `pages`, opcional) | Última versión desplegada | **Sí:** `text/css` / `application/javascript`, `Access-Control-Allow-Origin: *`, CDN con `max-age=600`. En repo privado requiere plan pago, y el sitio es **público** de todas formas. |
 
-URL estable a la última versión de un release (requiere acceso al repo si es privado):
-`https://github.com/skcoogilg/SkCo.Poc.Github.Contigo.Angular/releases/latest/download/poc-github-contigo.prd.js`
-
-### Activar GitHub Pages (opcional)
+### Configuración de GitHub Pages
 
 1. Settings → Pages → **Source: GitHub Actions**.
 2. Settings → Secrets and variables → Actions → Variables → `PAGES_ENABLED = true`.
-3. Push a `main`. Quedará en `https://skcoogilg.github.io/SkCo.Poc.Github.Contigo.Angular/<env>/poc-github-contigo.js`.
+3. Settings → Environments → `github-pages` → Deployment branches: permitir `dev`, `stg` y `prd` (por defecto solo deja `main`).
+
+### Uso en el host
+
+```html
+<link rel="stylesheet" href="https://skcoogilg.github.io/SkCo.Poc.Github.Contigo.Angular/stg/poc-github-contigo.css">
+<script src="https://skcoogilg.github.io/SkCo.Poc.Github.Contigo.Angular/stg/poc-github-contigo.js"></script>
+<poc-github-contigo></poc-github-contigo>
+```
+
+Pages cachea 10 minutos (`max-age=600`).
 
 ## Diferencias con el template
 

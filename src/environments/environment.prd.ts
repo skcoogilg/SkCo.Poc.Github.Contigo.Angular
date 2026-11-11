@@ -11,6 +11,7 @@ const eventHubsPrd = {
 
 export const environment = {
   production: true,
+  envName: 'prd',
   bootstrap: [],
   baseEnvApimUrl: 'https://apis.skandia.com.co',
   environmentOauth: 'prd',
