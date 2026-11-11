@@ -9,3 +9,11 @@ export const PAGE_HERO = {
     'Este microfrontend se compila con GitHub Actions y se sirve desde GitHub Pages, sin Azure Blob Storage.',
   envLabel: 'Ambiente',
 } as const;
+
+export const PAGE_PORTRAIT = {
+  imageUrl:
+    'https://img.lalr.co/cms/2025/10/31113716/Principal-2025-10-31T113712.852.jpg?size=xl',
+  imageAlt: 'Retrato de un hombre con saco azul de cuadros sobre fondo gris',
+  imageWidth: 1080,
+  imageHeight: 900,
+} as const;

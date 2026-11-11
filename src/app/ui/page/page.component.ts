@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { environment } from '@envs/environment';
 import { EventHubsService } from '@services/event-hubs.service';
-import { PAGE_HERO } from './page.constants';
+import { PAGE_HERO, PAGE_PORTRAIT } from './page.constants';
 
 @Component({
   selector: 'app-page',
@@ -14,6 +14,7 @@ export class PageComponent {
   private readonly eventHubService = inject(EventHubsService);
 
   protected readonly hero = PAGE_HERO;
+  protected readonly portrait = PAGE_PORTRAIT;
   protected readonly envName = environment.envName;
 
   /**

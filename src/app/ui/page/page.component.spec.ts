@@ -3,7 +3,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { environment } from '@envs/environment';
 import { PageComponent } from './page.component';
-import { PAGE_HERO } from './page.constants';
+import { PAGE_HERO, PAGE_PORTRAIT } from './page.constants';
 
 describe('PageComponent', () => {
   let fixture: ComponentFixture<PageComponent>;
@@ -33,6 +33,14 @@ describe('PageComponent', () => {
 
     expect(caption?.querySelector('h2')?.textContent?.trim()).toBe(PAGE_HERO.title);
     expect(caption?.querySelector('p')?.textContent?.trim()).toBe(PAGE_HERO.subtitle);
+  });
+
+  it('debería renderizar el retrato junto al hero', () => {
+    const img = host.querySelector<HTMLImageElement>('.gallery > img.gallery__portrait');
+
+    expect(img).not.toBeNull();
+    expect(img?.getAttribute('src')).toBe(PAGE_PORTRAIT.imageUrl);
+    expect(img?.getAttribute('alt')).toBe(PAGE_PORTRAIT.imageAlt);
   });
 
   it('debería mostrar el ambiente del build', () => {
