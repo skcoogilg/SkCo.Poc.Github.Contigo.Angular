@@ -1,0 +1,74 @@
+<div class="file-info">
+  <div class="left-section">
+    <span
+      class="icon-material-symbols_close close-button"
+      (click)="emitClose()"
+      ngbTooltip="Cerrar"
+      placement="end"
+    ></span>
+    <span class="icon-ion_newspaper pdf-icon"></span>
+    <h3>{{ fileName }}</h3>
+  </div>
+  <div class="right-section">
+    <img
+      src="https://skcoblobresources.blob.core.windows.net/digital-assets/icons/material-symbols_download.png"
+      alt="Download report"
+      (click)="downloadPdf()"
+      class="download-button"
+      ngbTooltip="Descargar reporte"
+      placement="start"
+    />
+  </div>
+</div>
+<div class="controls-container">
+  <div class="controls">
+    <!-- Controles de Páginas -->
+    <div class="pages-controls">
+      <button (click)="previousPage()" [disabled]="page <= 1">
+        <img
+          class="previous"
+          src="https://skcoblobresources.blob.core.windows.net/digital-assets/icons/flecha_angulo_derecha.svg"
+          alt="Previous page img"
+        />
+      </button>
+      <span class="pages">
+        Página
+        <input
+          class="input-page"
+          type="number"
+          min="1"
+          [value]="page"
+          (change)="pageInputChange($event)"
+        />
+        /{{ totalPages }}
+      </span>
+      <button (click)="nextPage()" [disabled]="page >= totalPages">
+        <img
+          class="next"
+          src="https://skcoblobresources.blob.core.windows.net/digital-assets/icons/flecha_angulo_derecha.svg"
+          alt="Next page img"
+        />
+      </button>
+    </div>
+    <div class="vertical-divider"></div>
+    <!-- Controles de Zoom -->
+    <div class="zoom-controls">
+      <button (click)="zoomOut()">-</button>
+      <span class="icon-buscar"></span>
+      <button (click)="zoomIn()">+</button>
+    </div>
+  </div>
+</div>
+
+<!-- Visor del PDF -->
+<div class="pdf-viewer-content" #pdfContainer>
+  <pdf-viewer
+    [src]="fileSrc"
+    [(page)]="page"
+    [zoom]="zoom"
+    [render-text]="true"
+    (after-load-complete)="onLoadComplete($event)"
+    style="display: block"
+  >
+  </pdf-viewer>
+</div>

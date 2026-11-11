@@ -1,0 +1,413 @@
+@import "../../styles/scrollbar.scss";
+
+.full-table-container {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
+  overflow-x: auto;
+}
+
+.w-100 {
+  width: 100%;
+}
+
+.point {
+  width: 8px !important;
+  height: 8px !important;
+  background-color: #b7b7b7;
+  border-radius: 50% !important;
+  padding: 5px !important;
+  min-height: 8px !important;
+}
+
+.contigo-full-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: auto; // Permitir que las columnas se ajusten al contenido
+  margin: 0px !important;
+  display: table !important;
+}
+
+.contigo-full-table-striped {
+  border-collapse: collapse; // Para una mejor presentación de filas
+}
+
+.contigo-full-table-striped tbody tr:nth-of-type(odd) {
+  background-color: #f9f9f9;
+}
+
+.contigo-full-table th,
+.contigo-full-table td {
+  padding: 8px 4px;
+  text-align: center;
+  border: none;
+  vertical-align: middle;
+
+  div {
+    background: white;
+    padding: 4px 8px;
+    border-radius: 5px;
+    border: 1px solid #fafafa;
+    min-height: 28px;
+  }
+}
+
+.contigo-full-table tbody {
+  tr {
+    &:hover {
+      background-color: #f3fce3;
+    }
+  }
+}
+
+.contigo-full-table td {
+  font-size: 10px;
+
+  // div {
+  //   &:hover {
+  //     box-shadow: 0px 0px 4px 0px #3d4b5c26;
+  //   }
+  // }
+}
+
+.contigo-full-table > thead {
+  height: max-content !important;
+}
+
+.contigo-full-table-head-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+
+  span {
+    font-size: 12px !important;
+    line-height: normal;
+  }
+}
+
+.contigo-full-table-striped > tbody > tr:nth-of-type(odd) > .actions-column {
+  --bs-table-accent-bg: #fff;
+
+  &:hover {
+    --bs-table-accent-bg: #caf9cb;
+  }
+}
+
+/* Columna de acciones fija a la derecha */
+.actions-column {
+  position: sticky;
+  right: 0;
+  background-color: #fff !important;
+  z-index: 1; /* Para asegurar que esté por encima de otras columnas al hacer scroll */
+  min-width: 40px;
+  cursor: pointer;
+
+  .header {
+    color: #333;
+    cursor: pointer;
+  }
+
+  &:hover {
+    --bs-table-accent-bg: #caf9cb;
+    .header {
+      color: #00c83c;
+    }
+  }
+
+  .btn-icon {
+    cursor: pointer;
+    color: #00c83c;
+    font-weight: bold;
+  }
+}
+
+.actions-th {
+  position: sticky;
+  right: 0;
+  background-color: #00c83c !important;
+  z-index: 1;
+  min-width: 40px;
+  cursor: pointer;
+  border: none !important;
+  transition: all 0.2s ease-in;
+
+  &:hover {
+    background-color: #01922d !important;
+  }
+}
+
+.actions-menu {
+  background-color: white; /* Fondo blanco para el menú */
+  border-radius: 4px; /* Bordes redondeados */
+}
+
+.action-item {
+  display: flex; /* Usar flex para alinear icono y texto */
+  align-items: center;
+  padding: 5px 10px; /* Espaciado alrededor de cada acción */
+  cursor: pointer; /* Cambia el cursor al pasar sobre cada acción */
+  font-size: 14px;
+  padding: 8px 4px;
+  height: 54px;
+}
+
+.action-item:hover {
+  background-color: #f0f0f0; /* Color de fondo al pasar el mouse */
+}
+
+.action-icon {
+  width: 20px; /* Ancho del icono de acción */
+  height: 20px; /* Alto del icono de acción */
+  margin-right: 5px; /* Espaciado entre icono y texto */
+}
+
+.disabled {
+  color: #ccc; /* Color para las acciones deshabilitadas */
+  img {
+    filter: grayscale(1);
+  }
+
+  .disable-question {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    margin-left: 8px;
+  }
+}
+
+.sort-icon {
+  cursor: pointer;
+
+  &:hover {
+    filter: brightness(0.5);
+  }
+}
+
+.icon-container {
+  display: flex;
+  gap: 5px; /* Espacio entre los iconos */
+
+  .icon {
+    width: 15px;
+    height: 15px;
+    margin: 0px 4px;
+    font-size: 15px;
+  }
+}
+
+.row-icon {
+  width: 20px; /* Ancho de los iconos */
+  height: 20px; /* Alto de los iconos */
+}
+
+.custom-tooltip {
+  background-color: #333;
+  color: #fff;
+  border-radius: 4px;
+  padding: 5px;
+  font-size: 12px;
+}
+
+thead tr {
+  display: table-row; /* Asegura que el header se comporte correctamente */
+}
+
+tbody tr {
+  display: table-row;
+}
+
+/* Estilo de los botones de acción */
+.btn-icon {
+  border: none;
+  background-color: transparent;
+  font-size: 18px; /* Tamaño del símbolo '>' */
+  cursor: pointer;
+
+  &:disabled {
+    filter: brightness(0) saturate(100%) invert(76%) sepia(11%) saturate(3%)
+      hue-rotate(11deg) brightness(100%) contrast(79%);
+  }
+}
+
+.action-on-cell {
+  cursor: pointer;
+  color: #00c83c;
+
+  &:hover {
+    text-decoration: underline;
+    color: #03a835;
+  }
+}
+
+.dropdown-menu {
+  position: fixed;
+}
+
+/* Estilos responsivos para que la tabla funcione bien en pantallas pequeñas */
+@media (max-width: 768px) {
+  .btn-icon {
+    font-size: 16px;
+  }
+}
+
+.paginator {
+  display: flex;
+  align-items: center;
+
+  button {
+    background-color: #00c83c;
+    border: none;
+    border-radius: 50%;
+    color: white;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 0 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+
+    .previous {
+      transform: rotate(180deg);
+    }
+
+    .previous,
+    .next {
+      filter: brightness(0) saturate(100%) invert(100%) sepia(0%)
+        saturate(7500%) hue-rotate(221deg) brightness(100%) contrast(100%);
+    }
+
+    &:disabled {
+      cursor: default;
+      background-color: lightgray;
+    }
+  }
+
+  span {
+    cursor: pointer;
+    margin: 0 5px;
+    font-weight: 600;
+
+    &.active,
+    &:hover {
+      color: #00c83c;
+    }
+  }
+}
+
+.page-size-select {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  .custom-select-contigo {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 100%;
+    border-radius: 5px;
+    background-color: #fff;
+    background-image: url("https://skcoblobresources.blob.core.windows.net/digital-assets/icons/icon-skandia/sk_flecha_abajo_2_p.svg");
+    background-repeat: no-repeat;
+    background-position: right 5px center;
+    background-size: 10px;
+    border: 2px solid #b7b7b7;
+    min-width: 53px;
+    height: 30px;
+    padding: 2px 5px;
+    font-weight: 300;
+
+    &:focus {
+      outline: none;
+      border-color: #00c83c;
+    }
+
+    &::-ms-expand {
+      display: none;
+    }
+  }
+}
+
+button {
+  outline: none;
+}
+
+.row-action-btn {
+  border: none;
+  outline: none;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  span {
+    font-size: 12px;
+    color: #00c73d;
+  }
+
+  &:hover {
+    span {
+      color: #01922d;
+    }
+  }
+}
+
+@media (max-width: 767px) {
+  .dropdown-menu {
+    position: fixed;
+    left: -75px !important;
+    transform: translateX(40%);
+    width: calc(100% - 78px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  }
+
+  .actions-menu {
+    width: 200px;
+  }
+
+  .mobile-height {
+    max-height: 15vh !important;
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+
+  .contigo-full-table > tbody {
+    position: sticky;
+  }
+}
+
+::ng-deep .actions-menu-popover {
+  max-width: 100% !important;
+  right: -10px !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra para el menú */
+
+  .popover-arrow {
+    display: none !important;
+  }
+
+  @media (max-width: 576px) {
+    max-width: 90% !important;
+    right: -50px !important;
+  }
+}
+
+::ng-deep .custom-container-popover {
+  max-width: 100% !important;
+  right: 10px !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra para el menú */
+
+  .popover-arrow {
+    display: none !important;
+  }
+
+  @media (max-width: 576px) {
+    max-width: 90% !important;
+    right: -30px !important;
+  }
+}

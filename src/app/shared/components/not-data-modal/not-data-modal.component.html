@@ -1,0 +1,17 @@
+<div class="grey-default-card text-center p-4">
+  <button type="button" class="close-btn" (click)="closeModal()">
+    <span class="icon-Xmark-line"></span>
+  </button>
+  <div class="icon-exclamation-custom mb-2 bg-{{ type }}-sk">
+    <span class="icon-circle-exclamation-line text-{{ type }}-sk"> </span>
+  </div>
+  <p class="sk-h4 fw-bold mt-2">{{ title }}</p>
+  <p class="text-body-2 mt-2">{{ description }}</p>
+  <button
+    type="button"
+    class="back-btn sk-btn sk-btn-primary p-2 w-100 mt-2"
+    (click)="closeModal()"
+  >
+    <p class="title-h5 bold">Regresar</p>
+  </button>
+</div>

@@ -1,0 +1,9 @@
+<select
+  class="form-select sk-b3 h-100"
+  [(ngModel)]="selectedValue"
+  (ngModelChange)="onValueChange()"
+>
+  <option *ngFor="let option of options" [value]="option.value">
+    {{ option.name }}
+  </option>
+</select>

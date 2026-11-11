@@ -1,0 +1,133 @@
+mat-form-field {
+  margin-right: 12px;
+}
+.dp-hidden {
+  margin: 0;
+  border: none;
+  padding: 0;
+}
+.custom-day {
+  text-align: center;
+  padding: 0.185rem 0.25rem;
+  display: inline-block;
+  height: 2rem;
+  width: 2rem;
+
+}
+.custom-day.focused {
+  background-color: #e6e6e6;
+
+}
+.custom-day.range,
+.custom-day:hover{
+  background-color: #5cb85c !important;
+  color: #FFF;
+  border-radius: 20px;
+}
+
+::ng-deep .ngb-dp-month-name {
+  background-color: #5cb85c !important;
+  color: white;
+}
+
+::ng-deep .ngb-dp-arrow {
+  button{
+    span{
+      color: #FFF;
+    }
+  }
+}
+::ng-deep .ngb-dp-weekdays{
+  background-color: #FFFF !important;
+  color: #5cb85c;
+}
+
+::ng-deep .ngb-dp-weekday{
+  color: #5cb85c !important;
+  font-weight: bold;
+}
+
+::ng-deep .ngb-dp-header{
+  background-color: #5cb85c !important;
+}
+
+.ngb-dp-navigation-chevront{
+  color: #e6e6e6;
+}
+
+.custom-day.faded {
+  background-color: rgba(205, 216, 217, 0.6) !important;
+  border-radius: 0;
+  color: black;
+}
+
+.input-group{
+  width: auto;
+  input{
+    font-size: 12px;
+  }
+  .dropdown-menu {
+    min-width: max-content !important;
+  }
+}
+
+.input-group>.form-control{
+  padding: .57rem 0.4rem;
+  width: 79px;
+}
+
+input::placeholder {
+  font-size: 11px; /* Cambia este valor al tamaño que desees */
+}
+
+::ng-deep .ngb-dp-day.disabled {
+  color: #b0b0b0; /* Color del texto gris más oscuro */
+  cursor: not-allowed;
+  pointer-events: none; /* Asegura que no se pueda interactuar con la fecha */
+}
+
+.bi-calendar3{
+  span{
+    font-size: 22px;
+  }
+}
+
+.btn-outline{
+  border-color: #ced4da !important;
+  border-top-right-radius: 0.375rem !important;
+  border-bottom-right-radius: 0.375rem !important;
+}
+
+::ng-deep .form-select {
+  background-image: url(https://skcoblobresources.blob.core.windows.net/digital-assets/icons/icon-skandia/sk_flecha_abajo_2_verde.svg);
+  background-size: 20px;
+  background-position: right;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  padding-right: 1.4rem;
+}
+
+.border-none{
+  border: none;
+}
+
+.init-date{
+  border-right: none;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.final-date{
+  border-left: none;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.pos-right{
+  right: 5px;
+}
+
+.form-control:focus {
+  border-color: none;
+  box-shadow: none;
+}

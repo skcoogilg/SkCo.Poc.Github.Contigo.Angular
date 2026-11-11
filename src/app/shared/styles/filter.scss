@@ -1,0 +1,76 @@
+@import './scrollbar.scss';
+
+.sk-b2{
+  padding: 4px 8px;
+}
+
+.dropdown-toggle{
+  border-radius: 8px;
+  border: 1px solid #B7B7B7;
+  background: #FFF;
+  color: #3F3F3F;
+  padding: 6px;
+  color: #666;
+  line-height: 22px;
+  height: 95%;
+
+  .checkbox-icon{
+    font-size: 13px;
+  }
+
+  &:after {
+    border-top: 0;
+    border-right: 0;
+    border-left: 0;
+    border-bottom: 0;
+    content: none;
+    width: auto;
+    height: auto;
+    vertical-align: middle;
+    margin-left: 5px;
+    position: relative;
+    top: 2.5px;
+  }
+
+  &:hover {
+    border: 1px solid #B7B7B7;
+  }
+}
+
+.sk-btn{
+  font-size: 12px !important;
+  padding: 8px;
+}
+
+.sk-btn-check:checked + .sk-btn,
+:not(.sk-btn-check) + .sk-btn:active,
+.sk-btn:first-child:active,
+.sk-btn.active,
+.sk-btn.show{
+  color: #3F3F3F;
+}
+
+.btn-green{
+  background-color: #00C83C;
+  color: white;
+  font-weight: 600 !important;
+  border: none;
+
+  &:hover{
+    border: none;
+    background-color: #03A835;
+    color: white;
+  }
+  .checkbox-icon:before{
+    color: white;
+  }
+}
+
+.btn-white{
+  background-color: white;
+  color: #666;
+
+  .checkbox-icon:before{
+    color: #00C83C;
+  }
+}

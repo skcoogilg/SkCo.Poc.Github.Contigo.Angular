@@ -1,0 +1,11 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: start;
+}
+
+.sk-btn {
+  border-radius: 4px;
+  min-width: 40px;
+}

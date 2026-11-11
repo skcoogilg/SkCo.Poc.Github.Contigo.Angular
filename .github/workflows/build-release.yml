@@ -1,0 +1,166 @@
+# Builds the Angular Elements bundle (js + css) for every environment and
+# publishes it as:
+#   1. Workflow artifacts (temporary, 30 days)       -> always
+#   2. A GitHub Release with the files attached      -> push to main / tag v*
+#   3. GitHub Pages (served with proper MIME + CORS)  -> opt-in, repo variable PAGES_ENABLED=true
+name: Build & Release
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  ELEMENT_NAME: poc-github-contigo
+  NODE_VERSION: 20.17.0
+
+jobs:
+  build:
+    name: Build (${{ matrix.env }})
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: true
+      matrix:
+        env: [dev, stg, prd]
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Build ${{ matrix.env }}
+        run: npm run build:${{ matrix.env }}
+
+      - name: Stage output
+        run: |
+          mkdir -p "out/${{ matrix.env }}"
+          cp "elements/${ELEMENT_NAME}.js"  "out/${{ matrix.env }}/"
+          cp "elements/${ELEMENT_NAME}.css" "out/${{ matrix.env }}/"
+          ls -la "out/${{ matrix.env }}"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: elements-${{ matrix.env }}
+          path: out/
+          retention-days: 30
+          if-no-files-found: error
+
+  release:
+    name: GitHub Release
+    needs: build
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: elements-*
+          path: bundle
+          merge-multiple: true
+
+      - name: Resolve tag
+        id: tag
+        run: |
+          if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
+            echo "name=$GITHUB_REF_NAME" >> "$GITHUB_OUTPUT"
+          else
+            echo "name=build-$GITHUB_RUN_NUMBER" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Prepare release assets
+        env:
+          TAG: ${{ steps.tag.outputs.name }}
+        run: |
+          mkdir release
+          # Flat files with the environment as suffix: poc-github-contigo.prd.js
+          for env_dir in bundle/*/; do
+            env_name=$(basename "$env_dir")
+            for f in "$env_dir"*; do
+              file=$(basename "$f")
+              cp "$f" "release/${file%.*}.${env_name}.${file##*.}"
+            done
+          done
+          # Same content keeping the per-environment folder layout (for deploy scripts)
+          (cd bundle && zip -qr "../release/${ELEMENT_NAME}-${TAG}.zip" .)
+          (cd release && sha256sum * > SHA256SUMS.txt)
+          ls -la release
+
+      - name: Create or update release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ steps.tag.outputs.name }}
+        run: |
+          cat > notes.md <<EOF
+          Build \`${GITHUB_SHA::7}\` from \`${GITHUB_REF_NAME}\` — run [#${GITHUB_RUN_NUMBER}](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}).
+
+          | Environment | JS | CSS |
+          |---|---|---|
+          | dev | \`${ELEMENT_NAME}.dev.js\` | \`${ELEMENT_NAME}.dev.css\` |
+          | stg | \`${ELEMENT_NAME}.stg.js\` | \`${ELEMENT_NAME}.stg.css\` |
+          | prd | \`${ELEMENT_NAME}.prd.js\` | \`${ELEMENT_NAME}.prd.css\` |
+
+          \`${ELEMENT_NAME}-${TAG}.zip\` contains the same files in \`<env>/${ELEMENT_NAME}.{js,css}\` layout.
+          EOF
+
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            gh release upload "$TAG" release/* --clobber
+          else
+            gh release create "$TAG" release/* \
+              --target "$GITHUB_SHA" \
+              --title "$TAG" \
+              --notes-file notes.md \
+              --latest
+          fi
+
+  pages:
+    name: GitHub Pages
+    needs: build
+    # Pages on a private repo requires a paid plan (Pro/Team/Enterprise).
+    # Enable with: Settings > Pages > Source = GitHub Actions, and repo variable PAGES_ENABLED=true
+    if: vars.PAGES_ENABLED == 'true' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: elements-*
+          path: site
+          merge-multiple: true
+
+      - name: Build index
+        run: |
+          {
+            echo "<!doctype html><meta charset=utf-8><title>${ELEMENT_NAME}</title>"
+            echo "<h1>${ELEMENT_NAME}</h1><p>Build ${GITHUB_SHA::7} (run #${GITHUB_RUN_NUMBER})</p><ul>"
+            (cd site && find . -type f \( -name '*.js' -o -name '*.css' \) | sort | sed -E 's#^\./(.*)#<li><a href="\1">\1</a></li>#')
+            echo "</ul>"
+          } > site/index.html
+          find site -type f
+
+      - uses: actions/configure-pages@v6
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+
+      - id: deploy
+        uses: actions/deploy-pages@v5

@@ -1,0 +1,17 @@
+<div class="d-flex justify-content-between mb-2 align-items-center">
+  <h3 class="sk-b3 subtitle m-0">{{ tittle }}</h3>
+  <div class="input-group">
+    <span class="icon-custom-search" id="basic-addon1">
+      <span class="icon-buscador mt-3"></span>
+    </span>
+    <input
+      #txtInput
+      autocomplete="off"
+      id="client-search"
+      type="text"
+      class="form-control"
+      [placeholder]="placeHolder"
+      (keyup)="searchCriteria(txtInput.value)"
+    />
+  </div>
+</div>

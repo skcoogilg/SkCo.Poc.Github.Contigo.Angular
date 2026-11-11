@@ -1,0 +1,19 @@
+.grey-default-card {
+  .icon-exclamation-custom {
+    display: inline-block;
+    border-radius: 60px;
+    padding: 20px;
+    .icon-circle-exclamation-line {
+      font-size: 20px;
+    }
+  }
+  .icon-adj {
+    border: none;
+  }
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}

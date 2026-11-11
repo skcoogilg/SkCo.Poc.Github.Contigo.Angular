@@ -1,0 +1,38 @@
+.bg-gray{
+  background-color: #DEDEDE;
+}
+
+.blur{
+  filter: blur(5px);
+  user-select: none;
+  pointer-events: none;
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+}
+
+.rotate{
+  rotate: 450deg;
+  transition: all .3s ease-in-out;
+}
+
+.no-rotate{
+  rotate: 0deg;
+  transition: all .3s ease-in-out;
+}
+
+.sk-pagination-container button{
+  color: white;
+  background-color: #00C73C;
+  border-radius: 100%;
+  border: none;
+  width: 32px;
+  height: 32px;
+}
+
+.pointer{
+  cursor: pointer;
+}
+
+.p-link{
+  color: #00C83C;
+}

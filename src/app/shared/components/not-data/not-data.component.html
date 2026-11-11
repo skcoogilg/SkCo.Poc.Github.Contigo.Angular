@@ -1,0 +1,37 @@
+<div class="grey-default-card text-center p-4">
+  @if(showComingSoon){
+  <div class="w-100 d-flex justify-content-end">
+    <div class="coming-soon text-body-3">¡Pronto!</div>
+  </div>
+  }
+  <div class="icon-exclamation-custom mb-2 bg-{{ type }}-sk">
+    <span class="icon-circle-exclamation-line text-{{ type }}-sk"> </span>
+  </div>
+  <p class="sk-h4 fw-bold mt-2">{{ title }}</p>
+  <p
+    class="text-body-2 mt-2"
+    [ngStyle]="customCssDescription ?? ''"
+    [innerHTML]="description"
+  ></p>
+  <div *ngIf="actions" class="w-100 d-flex justify-content-center mt-3">
+    <button
+      type="button"
+      class="icon-adj sk-btn sk-primary-text upload-attachment d-flex align-items-center gap-2"
+      (click)="actionsEvent.emit()"
+    >
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 16 16"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M11.2891 3.90137C10.7031 3.33887 9.78906 3.33887 9.20312 3.90137L4.89062 8.21387C3.90625 9.19824 3.90625 10.8154 4.89062 11.7998C5.875 12.7842 7.49219 12.7842 8.47656 11.7998L12.0391 8.2373C12.2969 7.97949 12.6953 7.97949 12.9531 8.2373C13.2109 8.49512 13.2109 8.89355 12.9531 9.15137L9.39062 12.7139C7.89062 14.2139 5.47656 14.2139 3.97656 12.7139C2.47656 11.2139 2.47656 8.7998 3.97656 7.2998L8.28906 2.9873C9.36719 1.88574 11.125 1.88574 12.2031 2.9873C13.3047 4.06543 13.3047 5.82324 12.2031 6.90137L8.07812 11.0264C7.42188 11.7061 6.32031 11.7061 5.66406 11.0264C4.98438 10.3701 4.98438 9.26855 5.66406 8.6123L9.03906 5.2373C9.29688 4.97949 9.69531 4.97949 9.95312 5.2373C10.2109 5.49512 10.2109 5.89355 9.95312 6.15137L6.57812 9.52637C6.4375 9.69043 6.4375 9.94824 6.57812 10.1123C6.74219 10.2529 7 10.2529 7.16406 10.1123L11.2891 5.9873C11.8516 5.40137 11.8516 4.4873 11.2891 3.90137Z"
+          fill="#00C73D"
+        />
+      </svg>
+      <h6>Subir archivo</h6>
+    </button>
+  </div>
+</div>

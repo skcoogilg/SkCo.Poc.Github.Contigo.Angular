@@ -1,0 +1,21 @@
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+/* Estilo del track */
+::-webkit-scrollbar-track {
+  border-radius: 6px;
+  background: #f1f1f1;
+}
+
+/* Estilo del handle */
+::-webkit-scrollbar-thumb {
+  border-radius: 6px;
+  background: #888;
+}
+
+/* Estilo del handle al pasar el mouse */
+::-webkit-scrollbar-thumb:hover {
+  background: #00C83C;
+}

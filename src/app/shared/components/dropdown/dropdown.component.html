@@ -1,0 +1,58 @@
+<div
+  class="content d-flex align-items-center mb-2"
+  [ngClass]="!showIconRight ? 'mt-3' : 'mt-0'"
+>
+  @if (icon) {
+    <span
+      [class]="icon + ' sk-gray icon-custom'"
+      [style.fontSize]="iconSize"
+      style="width: 23px !important"
+    ></span>
+  }
+
+  <div
+    class="d-flex justify-content-between w-100 cursor-pointer"
+    (click)="toggle()"
+  >
+    <div class="d-inline-flex align-items-center gap-1 sk-b1 fw-bold m-0">
+      <a
+        class="text-decoration-none btn-no-hover sk-gray d-flex align-items-center"
+        role="button"
+      >
+        <div class="flex-column">
+          <p class="sk-b2 fw-bold mb-0 me-2 text-grey-sk-00">{{ title }}</p>
+          @if (!!subTitle) {
+            <p class="text-body-3 mb-0 me-2 sk-gray">{{ subTitle }}</p>
+          }
+        </div>
+
+        <span
+          [ngClass]="showIconRight ? 'd-none' : 'd-flex'"
+          [class]="
+            (isCollapsed()
+              ? 'icon-Chevron-down-line'
+              : 'icon-Chevron-up-line') + ' sk-green ms-1 icon-custom'
+          "
+          [style.fontSize]="'8px'"
+        ></span>
+      </a>
+    </div>
+    <div class="d-flex">
+      <span
+        [ngClass]="!showIconRight ? 'd-none' : 'd-flex'"
+        [class]="
+          (!isCollapsed()
+            ? ' icon-Chevron-left-line'
+            : 'icon-Chevron-right-line') + ' sk-green ms-1 icon-custom'
+        "
+        [style.fontSize]="'13px'"
+      ></span>
+    </div>
+  </div>
+</div>
+
+<div class="sk-collapse" [class.show]="!isCollapsed()">
+  <div class="card card-body border-0 p-0">
+    <ng-content></ng-content>
+  </div>
+</div>

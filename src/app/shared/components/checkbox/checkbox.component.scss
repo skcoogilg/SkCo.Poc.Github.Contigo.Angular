@@ -1,0 +1,59 @@
+@import "../../styles/scrollbar.scss";
+
+.sk-b2 {
+  padding: 4px 8px;
+}
+
+.sk-btn {
+  font-size: 12px !important;
+  padding: 8px;
+}
+
+.sk-btn-check:checked + .sk-btn,
+:not(.sk-btn-check) + .sk-btn:active,
+.sk-btn:first-child:active,
+.sk-btn.active,
+.sk-btn.show {
+  color: #3f3f3f;
+}
+
+.container-checkbox {
+  width: 100%;
+  border-radius: 5px;
+  border: 1px solid var(--Gris11, #dedede);
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 220px;
+  .check-option {
+    min-width: 160px;
+  }
+}
+
+.form-check {
+  .sk-b1,
+  .subtitle {
+    font-weight: 700 !important;
+  }
+  .input-group {
+    .input-group-text {
+      padding: 0.2rem 0.4rem;
+      font-size: 0.8rem;
+      border-right: none;
+    }
+    .form-control {
+      padding: 0.2rem 0.3rem;
+      font-size: 0.7rem;
+      border-left: none;
+    }
+  }
+  .check-option {
+    p {
+      width: 85%;
+      white-space: break-spaces;
+    }
+  }
+}
+
+.form-switch {
+  padding-top: 0.25em;
+}

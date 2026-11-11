@@ -1,0 +1,522 @@
+<div class="full-table-container">
+  <div class="table-container w-100">
+    <table #tableElement class="w-100 contigo-full-table bd-radius">
+      <thead>
+        <tr>
+          <th
+            *ngIf="tableOptions.showIndexColumn"
+            class="contigo-full-table-th index-th"
+          >
+            <div
+              *ngIf="tableOptions.indexColumnType === 'number'"
+              class="contigo-full-table-head-content align-items-center w-name-portfolios"
+            >
+              <span class="text-center bold">#</span>
+            </div>
+            <!-- <div
+              *ngIf="tableOptions.indexColumnType === 'point'"
+              class="sk-table-head-content align-items-center w-name-portfolios"
+            >
+              <span class="text-center bold">#</span>
+            </div> -->
+          </th>
+          <th
+            *ngIf="
+              tableOptions.hasRowActions &&
+              tableOptions.rowActionsPosition === 'start'
+            "
+            scope="col"
+            class="pointer contigo-full-table-th"
+          >
+            <div
+              *ngIf="tableOptions.rowActionsTitle"
+              class="contigo-full-table-head-content justify-content-center align-items-center w-name-portfolios"
+            >
+              <span class="text-body-4 bold text-grey-sk-01">
+                {{ tableOptions.rowActionsTitle }}
+              </span>
+            </div>
+          </th>
+          @for (label of tableOptions.labelColumns; track $index) {
+          <th
+            *ngIf="tableOptions.indexDBKey ? showColumns?.[tableOptions.keys[$index]] : true"
+            scope="col"
+            class="pointer contigo-full-table-th"
+            (click)="
+              sortData({
+                by: tableOptions.keys[$index],
+                type: tableOptions.columnTypes
+                  ? tableOptions.columnTypes[$index]
+                  : 'string'
+              })
+            "
+          >
+            <div
+              class="contigo-full-table-head-content justify-content-center align-items-center w-name-portfolios"
+              [ngClass]="{
+                'd-none': tableOptions.hiddenColumnHeaders?.includes(
+                  tableOptions.keys[$index]
+                )
+              }"
+              [ngbTooltip]="tableOptions.tooltipsHeaderIcons?.[$index] 
+                ? ''
+                : tableOptions.headersTooltips
+                  ? tableOptions.headersTooltips[$index]
+                  : ''
+              "
+              placement="top"
+            >
+              <ng-container *ngIf="tableOptions.headerIcons?.[$index]">
+                <span
+                  *ngIf="tableOptions.positionHeaderIcons?.[$index] === 'start'"
+                  class="icon-container"
+                  [ngbTooltip]="tableOptions.tooltipsHeaderIcons?.[$index]"
+                  placement="top"
+                  container="body"
+                  [ngClass]="{
+                  'cursor-pointer':tableOptions.tooltipsHeaderIcons?.[$index]
+                }"
+                >
+                  @if(tableOptions.headerIcons?.[$index]?.includes('<')) {
+                  <span
+                    [innerHTML]="tableOptions.headerIcons?.[$index]"
+                    class="ms-2"
+                  >
+                  </span>
+
+                  }@else {
+                  <img
+                    *ngIf="tableOptions.headerIcons?.[$index]?.includes('http')"
+                    [src]="tableOptions.headerIcons?.[$index]"
+                    alt="Icon"
+                    class="icon"
+                  />
+                  <i
+                    *ngIf="!tableOptions.headerIcons?.[$index]?.includes('http')"
+                    class="icon"
+                    [class]="tableOptions.headerIcons?.[$index]"
+                  ></i>
+                  }
+                </span>
+              </ng-container>
+              <span
+                class="text-body-4 bold text-grey-sk-01"
+                [ngClass]="{
+                'text-center': tableOptions.alignmentColumns?.[$index] === 'center' || !tableOptions.alignmentColumns,
+                'text-start': tableOptions.alignmentColumns?.[$index] === 'start',
+                'text-end': tableOptions.alignmentColumns?.[$index] === 'end',
+                }"
+                >{{ label }}</span
+              >
+              <ng-container *ngIf="tableOptions.headerIcons?.[$index]">
+                <span
+                  *ngIf="tableOptions.positionHeaderIcons?.[$index] === 'end'"
+                  class="icon-container"
+                  [ngbTooltip]="tableOptions.tooltipsHeaderIcons?.[$index]"
+                  placement="top"
+                  container="body"
+                  [ngClass]="{
+                    'cursor-pointer':tableOptions.tooltipsHeaderIcons?.[$index]
+                  }"
+                >
+                  @if(tableOptions.headerIcons?.[$index]?.includes('<')) {
+                  <span
+                    [innerHTML]="tableOptions.headerIcons?.[$index]"
+                    class="ms-2"
+                  >
+                  </span>
+
+                  }@else {
+                  <img
+                    *ngIf="tableOptions.headerIcons?.[$index]?.includes('http')"
+                    [src]="tableOptions.headerIcons?.[$index]"
+                    alt="Icon"
+                    class="icon"
+                  />
+                  <i
+                    *ngIf="!tableOptions.headerIcons?.[$index]?.includes('http')"
+                    class="icon"
+                    [class]="tableOptions.headerIcons?.[$index]"
+                  ></i>
+                  }
+                </span>
+              </ng-container>
+              <span
+                class="icon-Group-5 ms-2 sort-icon"
+                *ngIf="tableOptions.canSort"
+              ></span>
+            </div>
+          </th>
+          }
+          <th
+            *ngIf="
+              tableOptions.hasRowActions &&
+              tableOptions.rowActionsPosition === 'end'
+            "
+            scope="col"
+            class="pointer contigo-full-table-th"
+          >
+            <div
+              *ngIf="tableOptions.rowActionsTitle"
+              class="contigo-full-table-head-content justify-content-center align-items-center w-name-portfolios"
+            >
+              <span class="text-body-4 bold text-grey-sk-01">
+                {{ tableOptions.rowActionsTitle }}
+              </span>
+            </div>
+          </th>
+          <!-- Columna de acciones fija con el label "..." -->
+          <ng-template #popoverTemplate>
+            <ng-content select="[otherActionsPopOver]"></ng-content>
+          </ng-template>
+          <th
+            *ngIf="tableOptions.hasActions"
+            #thActions
+            class="contigo-full-table-th actions-th"
+            (click)="toggleActionsMenu()"
+            ngbPopover=""
+            [ngbPopover]="actionsMenuTemplate"
+            autoClose="outside"
+            placement="left"
+            container="body"
+            popoverClass="actions-menu-popover"
+          >
+            <span
+              #popoverTrigger
+              ngbPopover=""
+              [ngbPopover]="popoverTemplate"
+              autoClose="outside"
+              placement="left"
+              container="body"
+              popoverClass="custom-popover"
+            ></span>
+            <span
+              #popoverTriggerCustomize
+              ngbPopover=""
+              [ngbPopover]="customContainerPopover"
+              autoClose="outside"
+              placement="left"
+              container="body"
+              popoverClass="custom-container-popover"
+            ></span>
+            <div
+              class="contigo-full-table-head-content align-items-center justify-content-center"
+            >
+              <span class="text-center bold header">
+                <span class="icon-filter_white"></span>
+              </span>
+            </div>
+            <!-- Menú de acciones -->
+            <ng-template #actionsMenuTemplate>
+              <div class="actions-menu" (mouseleave)="handleMouseLeave()">
+                <div
+                  class="action-item"
+                  *ngFor="let action of visibleActions"
+                  (click)="executeAction(action)"
+                  [class.disabled]="
+                    tableOptions.disableActions?.includes(action.key)
+                  "
+                  [ngbTooltip]="action.tooltip"
+                  placement="left"
+                >
+                  <img
+                    [src]="action.iconUrl"
+                    alt="{{ action.name }}"
+                    class="action-icon"
+                  />
+                  {{ action.name }}
+                  @if(tableOptions.disableActions?.includes(action.key)){
+                  <div
+                    class="disable-question"
+                    [ngbTooltip]="action.disableText"
+                    placement="left"
+                  >
+                    <img
+                      src="https://skcoblobresources.blob.core.windows.net/digital-assets/images/sk-question.svg"
+                      alt="Disable tooltip"
+                    />
+                  </div>
+                  }
+                </div>
+              </div>
+            </ng-template>
+            <ng-template #customContainerPopover>
+              <div class="d-flex flex-column">
+                <app-checkbox
+                  *ngIf="tableOptions.checkboxSettings && form"
+                  [checkboxForm]="form"
+                  [checkboxProperties]="tableOptions.checkboxSettings"
+                  [filterCriteria]="''"
+                ></app-checkbox>
+                <div class="w-100">
+                  <button
+                    type="button"
+                    class="sk-btn w-100 sk-btn-primary mt-2 mb-2"
+                    (click)="getIdColumns()"
+                  >
+                    Aplicar
+                  </button>
+                </div>
+              </div>
+            </ng-template>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let row of paginatedData; let dataIndex = index"
+          [ngStyle]="
+            tableOptions.customRowStyle
+              ? tableOptions.customRowStyle(row, dataIndex)
+              : {}
+          "
+        >
+          <td
+            *ngIf="
+              tableOptions.hasRowActions &&
+              tableOptions.rowActionsPosition === 'start'
+            "
+            class="contigo-full-table-td"
+          >
+            <div
+              class="contigo-full-table-row-actions d-flex gap-1 align-items-center justify-content-center"
+              [ngStyle]="
+                tableOptions.customColumnStyle
+                  ? tableOptions.customColumnStyle['row-actions']
+                  : {}
+              "
+            >
+              @for (rowAction of tableOptions.rowActions; track $index) {
+              <button
+                class="row-action-btn"
+                type="button"
+                [ngbTooltip]="rowAction.name"
+                (click)="rowAction.action(row)"
+              >
+                <span [class]="rowAction.iconUrl"></span>
+              </button>
+              }
+            </div>
+          </td>
+          <td
+            *ngIf="tableOptions.showIndexColumn"
+            class="contigo-full-table-td"
+          >
+            <div
+              class="d-flex justify-content-center align-items-center"
+              [ngStyle]="
+                tableOptions.customColumnStyle
+                  ? tableOptions.customColumnStyle['point']
+                  : {}
+              "
+            >
+              <div
+                class="point"
+                [style.backgroundColor]="tableOptions.pointColors?.[dataIndex]"
+              ></div>
+            </div>
+          </td>
+          @for (key of tableOptions.keys; track $index) {
+          <td
+            *ngIf="tableOptions.indexDBKey ? showColumns?.[tableOptions.keys[$index]] : true"
+            class="contigo-full-table-td"
+            [ngbTooltip]="
+              tableOptions.rowTooltip
+                ? tableOptions.rowTooltip(row, dataIndex)
+                : ''
+            "
+            container="body"
+          >
+            <div
+              class="d-flex align-items-center contigo-full-table-td-content"
+              [ngClass]="{
+              'justify-content-center': tableOptions.alignmentColumns?.[$index] === 'center' || !tableOptions.alignmentColumns,
+              'justify-content-start': tableOptions.alignmentColumns?.[$index] === 'start',
+              'justify-content-end': tableOptions.alignmentColumns?.[$index] === 'end',
+              }"
+              [ngStyle]="
+                tableOptions.customColumnStyle
+                  ? tableOptions.customColumnStyle[tableOptions.keys[$index]]
+                  : {}
+              "
+            >
+              <ng-container *ngIf="getRowIcons(row)[$index]">
+                <span
+                  *ngIf="getIconPosition(row)?.[$index] === 'start'"
+                  class="icon-container me-1"
+                  [ngbTooltip]="
+                  getTooltipIcon(row)?.[$index]
+                "
+                  placement="top"
+                  container="body"
+                >
+                  <img
+                    *ngIf="getRowIcons(row)[$index].includes('http')"
+                    [src]="getRowIcons(row)[$index]"
+                    alt="Icon"
+                    class="icon"
+                  />
+                  <i
+                    *ngIf="!getRowIcons(row)[$index].includes('http')"
+                    class="icon"
+                    [class]="getRowIcons(row)[$index]"
+                  ></i>
+                </span>
+              </ng-container>
+              <p
+                class="text-body-3 m-0 w-max-content"
+                [ngClass]="{
+                  'text-center': tableOptions.alignmentColumns?.[$index] === 'center' || !tableOptions.alignmentColumns,
+                  'text-start': tableOptions.alignmentColumns?.[$index] === 'start',
+                  'text-end': tableOptions.alignmentColumns?.[$index] === 'end',
+                  }"
+                [ngClass]="{
+                  'action-on-cell': tableOptions.columnTypes?.[$index] === 'action'
+                }"
+                (click)="executeCellAction(key, row, $index)"
+              >
+                {{
+                  formatData(
+                    row[key],
+                    tableOptions.columnTypes
+                      ? tableOptions.columnTypes[$index]
+                      : "string",
+                    dataIndex,
+                    $index
+                  )
+                }}
+              </p>
+              <ng-container *ngIf="getRowIcons(row)[$index]">
+                <span
+                  *ngIf="getIconPosition(row)?.[$index] === 'end'"
+                  class="icon-container"
+                  [ngbTooltip]="
+                  getTooltipIcon(row)?.[$index]
+                "
+                  placement="top"
+                  container="body"
+                >
+                  <img
+                    *ngIf="getRowIcons(row)[$index].includes('http')"
+                    [src]="getRowIcons(row)[$index]"
+                    alt="Icon"
+                    class="icon"
+                  />
+                  <i
+                    *ngIf="!getRowIcons(row)[$index].includes('http')"
+                    class="icon"
+                    [class]="getRowIcons(row)[$index]"
+                  ></i>
+                </span>
+              </ng-container>
+            </div>
+          </td>
+          }
+          <!-- Columna de acciones fija con '>' -->
+          @if (tableOptions.hasActions) {
+          <td class="actions-column contigo-full-table-td">
+            <div
+              class="d-flex justify-content-center align-items-center"
+              (click)="onRowAction(row, t)"
+              [ngbTooltip]="
+                tableOptions.disableActionsColumn || row.disabled
+                  ? 'Acción no disponible'
+                  : tableOptions.labelActionColumn || 'Ir'
+              "
+              placement="start"
+              container="body"
+              #t="ngbTooltip"
+            >
+              <button
+                class="btn btn-icon"
+                [disabled]="tableOptions.disableActionsColumn || row.disabled"
+              >
+                <img
+                  src="https://skcoblobresources.blob.core.windows.net/digital-assets/icons/flecha_angulo_derecha.svg"
+                  alt="Action row"
+                />
+              </button>
+            </div>
+          </td>
+          }
+          <td
+            *ngIf="
+              tableOptions.hasRowActions &&
+              tableOptions.rowActionsPosition === 'end'
+            "
+            class="contigo-full-table-td"
+          >
+            <div
+              class="contigo-full-table-row-actions d-flex gap-1 align-items-center justify-content-center"
+              [ngStyle]="
+                tableOptions.customColumnStyle
+                  ? tableOptions.customColumnStyle['row-actions']
+                  : {}
+              "
+            >
+              @for (rowAction of tableOptions.rowActions; track $index) {
+              <button
+                class="row-action-btn"
+                type="button"
+                [ngbTooltip]="rowAction.name"
+                (click)="rowAction.action(row)"
+              >
+                <span [class]="rowAction.iconUrl"></span>
+              </button>
+              }
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  @if(tableOptions.hasPaginator){
+  <div
+    class="w-100 pagination-container d-flex justify-content-between align-items-center"
+  >
+    <div class="paginator">
+      <button (click)="previousPage()" [disabled]="currentPage === 1">
+        <img
+          class="previous"
+          src="https://skcoblobresources.blob.core.windows.net/digital-assets/icons/flecha_angulo_derecha.svg"
+          alt="Previous page img"
+        />
+      </button>
+
+      <ng-container *ngFor="let page of getPaginatorPages()">
+        <span
+          *ngIf="page !== '...'; else dots"
+          (click)="goToPage(page)"
+          [class.active]="currentPage === page"
+        >
+          {{ page }}
+        </span>
+        <ng-template #dots>
+          <span *ngIf="!showMorePages">...</span>
+        </ng-template>
+      </ng-container>
+
+      <button (click)="nextPage()" [disabled]="currentPage === totalPages">
+        <img
+          class="next"
+          src="https://skcoblobresources.blob.core.windows.net/digital-assets/icons/flecha_angulo_derecha.svg"
+          alt="Next page img"
+        />
+      </button>
+    </div>
+
+    <div class="page-size-select">
+      <select
+        id="pageSize"
+        [(ngModel)]="pageSize"
+        (change)="updatePageSize()"
+        class="custom-select-contigo"
+      >
+        <option *ngFor="let size of pageSizes" [value]="size">
+          {{ size }}
+        </option>
+      </select>
+    </div>
+  </div>
+  }
+</div>

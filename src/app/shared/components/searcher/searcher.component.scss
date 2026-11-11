@@ -1,0 +1,27 @@
+.subtitle {
+  font-weight: 700 !important;
+}
+
+.input-group {
+  .icon-custom-search {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ced4da !important;
+    border-radius: 5px 0px 0px 5px;
+    padding: 4px;
+  }
+  input,
+  span {
+    height: 30px;
+  }
+  .input-group-text {
+    padding: 0.2rem 0.4rem;
+    font-size: 0.8rem;
+    border-right: none;
+  }
+  .form-control {
+    padding: 0.2rem 0.3rem;
+    font-size: 0.7rem;
+    border-left: none;
+  }
+}

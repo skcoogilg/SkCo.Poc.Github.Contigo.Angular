@@ -1,0 +1,67 @@
+<div class="ms-1">
+  <form class="row row-cols-sm-auto">
+    <div class="col-12 d-flex flex-nowrap pe-0">
+      <div class="dp-hidden position-absolute">
+        <div class="input-group">
+          <input
+            name="datepicker"
+            class="form-control sk-b3 border-none"
+            ngbDatepicker
+            #datepicker="ngbDatepicker"
+            [autoClose]="'outside'"
+            (dateSelect)="onDateSelection($event, datepicker)"
+            [displayMonths]="2"
+            [dayTemplate]="t"
+            [maxDate]="{ year: maxDate.year, month: maxDate.month, day: maxDate.day }"
+            outsideDays="hidden"
+            tabindex="-1"
+          />
+          <ng-template #t let-date let-focused="focused">
+            <span
+              class="custom-day"
+              [class.focused]="focused"
+              [class.range]="isRange(date)"
+              [class.faded]="isHovered(date) || isInside(date)"
+              (mouseenter)="hoveredDate = date"
+              (mouseleave)="hoveredDate = null"
+            >
+              {{ date.day }}
+            </span>
+          </ng-template>
+        </div>
+      </div>
+      <div class="input-group">
+        <input
+          #dpFromDate
+          class="form-control sk-b3 init-date"
+          [placeholder]="placeholder || 'yyyy-mm-dd'"
+          name="dpFromDate"
+          [value]="formatter.format(fromDate)"
+          (input)="validateInput(true, fromDate, dpFromDate.value)"
+          (keydown)="onKeyDown($event)"
+          (click)="datepicker.toggle()"
+        />
+      </div>
+      <div class="input-group pos-right">
+        <input
+          #dpToDate
+          class="form-control sk-b3 final-date"
+          [placeholder]="placeholder ? '' : 'yyyy-mm-dd'"
+          name="dpToDate"
+          [value]="formatter.format(toDate)"
+          (input)="toDate = validateInput(false, toDate, dpToDate.value)"
+          (keydown)="onKeyDown($event)"
+          (click)="datepicker.toggle()"
+        />
+      </div>
+    </div>
+    <div class="d-flex align-items-center p-0 ms-1" *ngIf="!placeholder">
+      <span
+        class="icon-mingcute_alert-fill"
+        *ngIf="!isDateCorrect"
+        [ngbTooltip]="alertMsn"
+        placement="right"
+      ></span>
+    </div>
+  </form>
+</div>

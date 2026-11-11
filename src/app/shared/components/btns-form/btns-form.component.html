@@ -1,0 +1,19 @@
+<p class="text-body-4 bold" *ngIf="btnsProperties.title !== ''">
+  {{ btnsProperties.title }}
+</p>
+<div
+  class="btn-group flex-wrap gap-2"
+  role="group"
+  [attr.aria-label]="btnsProperties.title"
+>
+  <button
+    #btnForm
+    type="button"
+    class="sk-btn sk-btn-outline-primary p-2"
+    *ngFor="let option of btnsProperties.options"
+    (click)="selectOption(option)"
+    [class.active]="selectedOption === option"
+  >
+    <p class="sk-b4 m-0">{{ option }}</p>
+  </button>
+</div>

@@ -1,0 +1,31 @@
+<div class="legend-wrapper mt-2">
+  <span
+    *ngIf="showArrows"
+    (click)="scroll(-150)"
+    class="icon-Circle-chevron-left-solid ms-1 arrow-custom"
+  ></span>
+
+  <div
+    #legendContainer
+    class="custom-legend ms-1"
+    (scroll)="checkOverflow()"
+    (wheel)="onWheel($event)"
+  >
+    <div
+      class="legend-chip"
+      *ngFor="let serie of series"
+      [class.disabled]="!activeSeries[serie.name]"
+      [style.borderColor]="serie.itemStyle.color"
+      (click)="toggleSerie(serie.name)"
+    >
+      <span class="dot" [style.background]="serie.itemStyle.color"></span>
+      <span class="text">{{ serie.name }}</span>
+    </div>
+  </div>
+
+  <span
+    *ngIf="showArrows"
+    (click)="scroll(150)"
+    class="icon-Circle-chevron-right-solid ms-2 arrow-custom"
+  ></span>
+</div>
