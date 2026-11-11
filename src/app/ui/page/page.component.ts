@@ -1,20 +1,20 @@
-import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { environment } from '@envs/environment';
 import { EventHubsService } from '@services/event-hubs.service';
-
-const MODULES = [CommonModule];
+import { PAGE_HERO } from './page.constants';
 
 @Component({
   selector: 'app-page',
   standalone: true,
-  imports: [MODULES],
   templateUrl: './page.component.html',
   styleUrl: './page.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PageComponent {
   private readonly eventHubService = inject(EventHubsService);
 
-  constructor() {}
+  protected readonly hero = PAGE_HERO;
+  protected readonly envName = environment.envName;
 
   /**
    * Send event to Event Hub

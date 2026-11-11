@@ -1,1 +1,14 @@
-<div class="d-flex flex-column p-2 gap-3">Devengers Page Template</div>
+<section class="hero" aria-labelledby="poc-hero-title">
+  <img
+    class="hero__image"
+    [src]="hero.imageUrl"
+    [alt]="hero.imageAlt"
+    [width]="hero.imageWidth"
+    [height]="hero.imageHeight"
+  />
+  <div class="hero__caption">
+    <span class="hero__badge text-body-3">{{ hero.envLabel }}: {{ envName }}</span>
+    <h2 id="poc-hero-title" class="title-h2">{{ hero.title }}</h2>
+    <p class="text-body-2">{{ hero.subtitle }}</p>
+  </div>
+</section>
