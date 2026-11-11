@@ -10,6 +10,7 @@ const eventHubsProps = {
 
 export const environment = {
   production: false,
+  envName: 'local',
   //APIs CONTIGO
   baseEnvApimUrl: 'https://apisstg.skandia.com.co',
   clientId: '172eceef-d106-4d55-bb43-0fa8d26bf760',

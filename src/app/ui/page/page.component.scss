@@ -1,0 +1,54 @@
+// This template does not ship the --sk-* design tokens (no sk-components-angular),
+// so the hero colors are centralized here as local custom properties.
+:host {
+  display: block;
+  --poc-hero-text: #fff;
+  --poc-hero-scrim: rgb(0 0 0 / 70%);
+  --poc-hero-badge-bg: var(--green-sk-color);
+}
+
+.hero {
+  position: relative;
+  max-width: 1280px;
+  margin: 0 auto;
+  border-radius: 16px;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+}
+
+.hero__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero__caption {
+  position: absolute;
+  inset: auto 0 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 48px 32px 32px;
+  color: var(--poc-hero-text);
+  background: linear-gradient(to top, var(--poc-hero-scrim), transparent);
+}
+
+.hero__badge {
+  padding: 2px 12px;
+  border-radius: 50px;
+  background-color: var(--poc-hero-badge-bg);
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+@media (max-width: 576px) {
+  .hero {
+    aspect-ratio: 4 / 5;
+  }
+
+  .hero__caption {
+    padding: 32px 16px 16px;
+  }
+}
